@@ -9,6 +9,7 @@ module Harvest
     property :id
     property :subject
     property :number
+    property :created_by_id
     property :created_at
     property :updated_at
     property :issued_at
