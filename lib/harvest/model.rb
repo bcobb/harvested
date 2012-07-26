@@ -58,7 +58,27 @@ module Harvest
       
       def parse(json)
         parsed = String === json ? JSON.parse(json) : json
-        Array.wrap(parsed).map {|attrs| skip_json_root? ? new(attrs) : new(attrs[json_root])}
+
+        Array.wrap(parsed).map do |attrs|
+          if skip_json_root?
+            new(attrs)
+          else
+            # XXX: Hacky
+            #
+            # This allows us to specify an array of possible JSON roots in the
+            # model. In particular, we want to do this when the JSON root
+            # differs between, for example, a collection of objects and a single
+            # object.
+            #
+            # See: Harvest::Invoice.
+            json_roots = Array.wrap(json_root).map(&:to_s)
+            found_roots = attrs.keys.map(&:to_s)
+
+            json_root = found_roots.detect { |root| json_roots.include?(root) }
+
+            new(attrs[json_root])
+          end
+        end
       end
       
       def json_root

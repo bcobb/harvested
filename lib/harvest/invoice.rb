@@ -39,9 +39,10 @@ module Harvest
     property :import_hours
     property :import_expenses
     
-    def self.json_root; "doc"; end
-    # skip_json_root true
-    
+    def self.json_root
+      %w(invoice invoices)
+    end
+
     def initialize(args = {})
       @line_items = []
       args            = args.stringify_keys
